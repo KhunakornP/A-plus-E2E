@@ -1,5 +1,5 @@
 # A-plus-E2E
-End-To-End-Tests for A+ management.
+End-To-End-Tests for A+ management.<br>
 Link to A+ management: https://github.com/KhunakornP/A-plus-management
 
 ## Prerequisites
