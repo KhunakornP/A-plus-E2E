@@ -45,16 +45,45 @@ class Browser:
         return ActionChains(browser)
 
 
-
 class BaseUserActions:
     """Class containing basic actions a user might preform."""
 
-    def login(self):
-        """Login the user with a Google account."""
+    @staticmethod
+    def login_to_google(self, email: str, password: str):
+        """Authenticate the current user with their Google Oauth credentials."""
+        browser.get("https://a-plus-management.onrender.com/")
+        time.sleep(3)
+        # find the login with Google button
+        login = WebDriverWait(browser, 10).until(
+            cond.visibility_of_element_located((By.TAG_NAME, "button"))
+        )
+        # click the button
+        actions.move_to_element(login).click().perform()
+        time.sleep(3)
+        # find the email input
+        email_input = WebDriverWait(browser, 10).until(
+            cond.visibility_of_element_located((By.ID, "identifierId"))
+        )
+        # key in email and click next
+        email_input.send_keys(email)
+        browser.find_element(By.ID, "identifierNext").click()
+        time.sleep(3)
+        # find the password input
+        password_input = WebDriverWait(browser, 10).until(
+            cond.visibility_of_element_located(
+                (By.CSS_SELECTOR, "input[type=password]"))
+        )
+        # key in the password and click next
+        password_input.send_keys(password)
+        browser.find_element(By.ID, "passwordNext").click()
+        # accept TOS on the Oauth consent screen
+        WebDriverWait(browser, 10).until(
+            cond.visibility_of_element_located(
+                (By.XPATH, "//span[text()='Continue']"))
+        ).click()
 
 
-
-class StudentTests:
+class StudentTests(BaseUserActions):
     """Class containing tests for students."""
 
     def test_create_tasks(self, taskboard_name: str, tasks: Collection[dict]):
@@ -73,27 +102,30 @@ def login_to_google(email: str, password: str):
     """Authenticate the current user with their Google Oauth credentials."""
     browser.get("https://a-plus-management.onrender.com/")
     time.sleep(3)
-
+    # find the login with Google button
     login = WebDriverWait(browser, 10).until(
         cond.visibility_of_element_located((By.TAG_NAME, "button"))
     )
+    # click the button
     actions.move_to_element(login).click().perform()
     time.sleep(3)
-
+    # find the email input
     email_input = WebDriverWait(browser, 10).until(
         cond.visibility_of_element_located((By.ID, "identifierId"))
     )
-
+    # key in email and click next
     email_input.send_keys(email)
     browser.find_element(By.ID, "identifierNext").click()
     time.sleep(3)
-
+    # find the password input
     password_input = WebDriverWait(browser, 10).until(
         cond.visibility_of_element_located(
             (By.CSS_SELECTOR, "input[type=password]"))
     )
+    # key in the password and click next
     password_input.send_keys(password)
     browser.find_element(By.ID, "passwordNext").click()
+    # accept TOS on the Oauth consent screen
     WebDriverWait(browser, 10).until(
         cond.visibility_of_element_located((By.XPATH, "//span[text()='Continue']"))
     ).click()
