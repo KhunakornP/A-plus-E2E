@@ -33,5 +33,16 @@ pip install -r requirements.txt
 
 5. run the script
 ```
-python scripts.py
+python scripts.py <test to run>
 ```
+
+## Test suites
+
+| command    | What it tests                                                                                         |
+|------------|-------------------------------------------------------------------------------------------------------|
+| present    | Test basic student actions as well as parent action.<br>Run with HEADLESS = False for best experience |
+| basic      | Test taskboard creation and task creation.                                                            |
+| calculator | Test calculator calculation                                                                           |
+| burn       | Test for Burn-down charts                                                                             |
+| profile    | Test updating user profile, A-level status, and adding parents for students                           |
+| parent     | Test viewing the parent dashboard                                                                     |
