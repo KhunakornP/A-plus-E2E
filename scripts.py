@@ -7,6 +7,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as cond
 from selenium.webdriver.common.action_chains import ActionChains
 from decouple import config
+from urllib.parse import urlparse, urlunparse
 import time
 
 
@@ -86,6 +87,15 @@ class BaseUserActions:
 class StudentTests(BaseUserActions):
     """Class containing tests for students."""
 
+    def find_most_recent_taskboard(self, tb_list ):
+        """
+        Finds the most recent taskboard.
+
+        :param tb_list: A list of links to taskboards
+        :returns: the go to taskboard button for that taskboard
+        """
+        return sorted(tb_list, key=lambda x: int(urlparse(x.get_attribute('href')).path.strip("/").split("/")[-1]), reverse=True)[0]
+
     def test_create_tasks(self, taskboard_name: str, tasks: Collection[dict]):
         """
         As a student, I want to be able to create tasks.
@@ -95,7 +105,31 @@ class StudentTests(BaseUserActions):
         :param taskboard_name: The taskboard the student is using.
         :param tasks: Tasks the student will create
         """
-        pass
+        taskboards = browser.find_elements(By.XPATH,
+                                           f"//*[contains(text(),'{taskboard_name}')]")
+        if len(taskboards) > 0:
+            #  TODO: add delete previous taskboard
+            pass
+
+        create_tb = WebDriverWait(browser, 10).until(
+            cond.visibility_of_element_located(
+                (By.CSS_SELECTOR, "button[data-bs-toggle=modal]"))
+        )
+        actions.move_to_element(create_tb).click().perform()
+        time.sleep(3)
+
+        tb_name_input = WebDriverWait(browser, 10).until(
+            cond.visibility_of_element_located(
+                (By.ID, "taskboard-title"))
+        )
+
+        tb_name_input.send_keys(taskboard_name)
+        time.sleep(3)
+        browser.find_element(By.ID, "create-tb-btn").click()
+        time.sleep(3)
+        tb_buttons = browser.find_elements(By.CSS_SELECTOR, "a[class='btn btn-info mx-2']")
+        taskboard = self.find_most_recent_taskboard(tb_buttons)
+        actions.move_to_element(taskboard).click().perform()
 
 
 def login_to_google(email: str, password: str):
@@ -136,6 +170,7 @@ if __name__ == "__main__":
     browser = driver.get_browser()
     actions = driver.get_action_chain()
     login_to_google(STUDENT_EMAIL, STUDENT_PASSWORD)
+    StudentTests().test_create_tasks("a", [{"a": 123}])
 
     print("eol")
     while(True):
